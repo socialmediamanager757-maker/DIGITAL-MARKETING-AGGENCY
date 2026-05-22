@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | NexAds Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#ff6b2b;--secondary:#ff3d71;--accent:#ffd60a;
+  --dark:#0a0a0f;--dark2:#111118;--dark3:#1a1a28;
+  --border:rgba(255,255,255,0.08);--text:#e8e8f0;--text-muted:#9090a8;
+  --gradient:linear-gradient(135deg,var(--primary),var(--secondary));
+  --green:#4ade80;--red:#ff6b6b;--blue:#60a5fa;
+  --font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;
+}
+body{font-family:var(--font-b);background:var(--dark);color:var(--text);min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;top:0;left:0;width:260px;height:100vh;
+  background:var(--dark2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:1.5rem;z-index:100;overflow-y:auto;
+}
+.logo{display:flex;align-items:center;gap:0.5rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.logo-icon{font-size:1.4rem;}
+.logo-text{font-family:var(--font-d);font-size:1.2rem;font-weight:800;}
+.logo-text span{color:var(--primary);}
+.nav-item{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.75rem 1rem;border-radius:12px;margin-bottom:0.3rem;
+  cursor:pointer;transition:all 0.2s;color:var(--text-muted);font-size:0.9rem;font-weight:500;
+  text-decoration:none;
+}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:white;}
+.nav-item.active{background:rgba(255,107,43,0.1);color:var(--primary);border:1px solid rgba(255,107,43,0.2);}
+.nav-item .icon{font-size:1.1rem;}
+.sidebar-footer{margin-top:auto;padding-top:1.5rem;border-top:1px solid var(--border);}
+.logout-btn{
+  width:100%;padding:0.75rem;border-radius:12px;
+  border:1px solid var(--border);background:transparent;color:var(--text-muted);
+  font-family:var(--font-b);font-size:0.9rem;cursor:pointer;transition:all 0.2s;
+}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* MAIN */
+.main{margin-left:260px;min-height:100vh;padding:2rem;}
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:2rem;
+}
+.page-title{font-family:var(--font-d);font-size:1.8rem;font-weight:800;}
+.top-right{display:flex;align-items:center;gap:1rem;}
+.admin-badge{
+  background:rgba(255,107,43,0.1);border:1px solid rgba(255,107,43,0.2);
+  color:var(--primary);padding:0.4rem 1rem;border-radius:50px;font-size:0.8rem;font-weight:600;
+}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem;}
+.stat-card{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:16px;padding:1.5rem;transition:all 0.2s;
+}
+.stat-card:hover{border-color:rgba(255,107,43,0.3);transform:translateY(-2px);}
+.stat-icon{font-size:2rem;margin-bottom:0.5rem;}
+.stat-num{font-family:var(--font-d);font-size:2rem;font-weight:800;margin-bottom:0.2rem;}
+.stat-label{color:var(--text-muted);font-size:0.85rem;}
+.stat-change{font-size:0.8rem;margin-top:0.3rem;}
+.up{color:var(--green);}
+.down{color:var(--red);}
+
+/* FILTERS */
+.filters{
+  display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;
+}
+.filter-btn{
+  padding:0.5rem 1.2rem;border-radius:50px;
+  border:1px solid var(--border);background:transparent;color:var(--text-muted);
+  font-family:var(--font-b);font-size:0.85rem;cursor:pointer;transition:all 0.2s;
+}
+.filter-btn:hover,.filter-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(255,107,43,0.1);}
+.search-box{
+  margin-left:auto;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:50px;padding:0.5rem 1.2rem;color:white;
+  font-family:var(--font-b);font-size:0.85rem;outline:none;width:220px;
+  transition:border-color 0.2s;
+}
+.search-box:focus{border-color:var(--primary);}
+.search-box::placeholder{color:var(--text-muted);}
+
+/* TABLE */
+.table-card{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+}
+.table-header{
+  padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.table-title{font-family:var(--font-d);font-weight:700;font-size:1.1rem;}
+.export-btn{
+  padding:0.5rem 1rem;border-radius:8px;
+  border:1px solid var(--border);background:transparent;color:var(--text-muted);
+  font-family:var(--font-b);font-size:0.8rem;cursor:pointer;transition:all 0.2s;
+}
+.export-btn:hover{border-color:var(--primary);color:var(--primary);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:rgba(255,255,255,0.03);}
+th{
+  padding:1rem 1.2rem;text-align:left;font-size:0.78rem;font-weight:600;
+  color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(255,255,255,0.03);}
+td{padding:1rem 1.2rem;font-size:0.875rem;vertical-align:middle;}
+.customer-name{font-weight:600;color:white;margin-bottom:0.2rem;}
+.customer-biz{font-size:0.78rem;color:var(--text-muted);}
+.badge{
+  display:inline-block;padding:0.25rem 0.75rem;border-radius:50px;
+  font-size:0.75rem;font-weight:600;
+}
+.badge-new{background:rgba(255,107,43,0.1);color:var(--primary);border:1px solid rgba(255,107,43,0.3);}
+.badge-contacted{background:rgba(96,165,250,0.1);color:var(--blue);border:1px solid rgba(96,165,250,0.3);}
+.badge-active{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.3);}
+.badge-closed{background:rgba(255,107,107,0.1);color:var(--red);border:1px solid rgba(255,107,107,0.3);}
+
+.actions{display:flex;gap:0.5rem;}
+.action-btn{
+  padding:0.35rem 0.8rem;border-radius:8px;
+  border:1px solid var(--border);background:transparent;color:var(--text-muted);
+  font-size:0.78rem;cursor:pointer;transition:all 0.2s;font-family:var(--font-b);
+}
+.action-btn:hover{border-color:var(--primary);color:var(--primary);}
+.action-btn.danger:hover{border-color:var(--red);color:var(--red);}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--text-muted);}
+.empty-state .ei{font-size:3rem;margin-bottom:1rem;}
+
+/* MODAL DETAIL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;padding:1rem;
+}
+.modal-overlay.open{display:flex;}
+.modal-card{
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:24px;padding:2.5rem;width:100%;max-width:600px;
+  max-height:90vh;overflow-y:auto;
+  animation:fadeUp 0.3s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.modal-top h3{font-family:var(--font-d);font-size:1.3rem;font-weight:800;}
+.close-btn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--border);
+  background:transparent;color:var(--text-muted);cursor:pointer;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
+}
+.close-btn:hover{border-color:var(--red);color:var(--red);}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.detail-item{background:rgba(255,255,255,0.04);border-radius:12px;padding:1rem;}
+.detail-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;}
+.detail-val{font-size:0.9rem;font-weight:500;word-break:break-word;}
+.status-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
+.status-select{
+  flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:10px;padding:0.6rem 1rem;color:white;
+  font-family:var(--font-b);font-size:0.9rem;outline:none;
+}
+.status-select option{background:var(--dark2);}
+.save-status-btn{
+  padding:0.6rem 1.5rem;border-radius:10px;border:none;
+  background:var(--gradient);color:white;
+  font-family:var(--font-b);font-weight:600;font-size:0.9rem;cursor:pointer;
+}
+.modal-notes{background:rgba(255,255,255,0.04);border-radius:12px;padding:1rem;margin-bottom:1rem;}
+.modal-notes label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.5rem;}
+.notes-ta{
+  width:100%;background:transparent;border:none;color:white;
+  font-family:var(--font-b);font-size:0.9rem;resize:vertical;min-height:80px;outline:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{width:60px;padding:1rem 0.75rem;}
+  .sidebar .logo-text,.sidebar .nav-item span,.sidebar-footer .logout-btn span{display:none;}
+  .main{margin-left:60px;padding:1rem;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .detail-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  table{display:block;overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH GUARD -->
+<script>
+if(!sessionStorage.getItem('nexads_admin')){
+  window.location.href='login.html';
+}
+</script>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <span class="logo-icon">⚡</span>
+    <span class="logo-text">NexAds<span>Pro</span></span>
+  </div>
+  <a class="nav-item active" href="dashboard.html"><span class="icon">📊</span><span>Dashboard</span></a>
+  <a class="nav-item" href="#" onclick="filterStatus('all')"><span class="icon">👥</span><span>All Customers</span></a>
+  <a class="nav-item" href="#" onclick="filterStatus('New')"><span class="icon">🆕</span><span>New Leads</span></a>
+  <a class="nav-item" href="#" onclick="filterStatus('Active')"><span class="icon">✅</span><span>Active Clients</span></a>
+  <a class="nav-item" href="#" onclick="addSample()"><span class="icon">🧪</span><span>Add Sample</span></a>
+  <div class="sidebar-footer">
+    <a class="nav-item" href="../index.html" style="margin-bottom:0.5rem"><span class="icon">🌐</span><span>View Website</span></a>
+    <button class="logout-btn" onclick="logout()">🚪 <span>Logout</span></button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="top-bar">
+    <div>
+      <div class="page-title">Admin Dashboard</div>
+      <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.25rem" id="currentDate"></div>
+    </div>
+    <div class="top-right">
+      <div class="admin-badge">👤 Admin Panel</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid" id="statsGrid">
+    <!-- Filled by JS -->
+  </div>
+
+  <!-- FILTERS & SEARCH -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterStatus('all',this)">All</button>
+    <button class="filter-btn" onclick="filterStatus('New',this)">🆕 New</button>
+    <button class="filter-btn" onclick="filterStatus('Contacted',this)">📞 Contacted</button>
+    <button class="filter-btn" onclick="filterStatus('Active',this)">✅ Active</button>
+    <button class="filter-btn" onclick="filterStatus('Closed',this)">❌ Closed</button>
+    <input class="search-box" type="text" placeholder="🔍 Search customer..." id="searchInput" oninput="renderTable()">
+    <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <div class="table-header">
+      <span class="table-title">Customer Orders</span>
+      <span style="color:var(--text-muted);font-size:0.85rem" id="tableCount"></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Service</th>
+          <th>Plan</th>
+          <th>Phone</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="ei">📋</div>
+      <p>No customers found</p>
+      <p style="font-size:0.85rem;margin-top:0.5rem">Submit a form on the website to see data here</p>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-card">
+    <div class="modal-top">
+      <h3>Customer Details</h3>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="detail-grid" id="detailGrid"></div>
+    <div class="status-row">
+      <select class="status-select" id="statusSelect">
+        <option>New</option>
+        <option>Contacted</option>
+        <option>Active</option>
+        <option>Closed</option>
+      </select>
+      <button class="save-status-btn" onclick="saveStatus()">Save Status</button>
+    </div>
+    <div class="modal-notes">
+      <label>Admin Notes</label>
+      <textarea class="notes-ta" id="adminNotes" placeholder="Write internal notes about this customer..."></textarea>
+    </div>
+    <button class="save-status-btn" onclick="saveNotes()" style="width:100%">💾 Save Notes</button>
+  </div>
+</div>
+
+<script>
+// Date
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-PK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+let currentFilter = 'all';
+let currentCustomerId = null;
+
+// Get customers
+function getCustomers(){
+  return JSON.parse(localStorage.getItem('nexads_customers')||'[]');
+}
+function saveCustomers(list){
+  localStorage.setItem('nexads_customers',JSON.stringify(list));
+}
+
+// Stats
+function renderStats(){
+  const all = getCustomers();
+  const newC = all.filter(c=>c.status==='New').length;
+  const active = all.filter(c=>c.status==='Active').length;
+  const contacted = all.filter(c=>c.status==='Contacted').length;
+  const revenue = active * 25000;
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-num">${all.length}</div>
+      <div class="stat-label">Total Customers</div>
+      <div class="stat-change up">↑ All time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🆕</div>
+      <div class="stat-num">${newC}</div>
+      <div class="stat-label">New Leads</div>
+      <div class="stat-change up">Action required</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-num">${active}</div>
+      <div class="stat-label">Active Clients</div>
+      <div class="stat-change up">↑ Growing</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-num">Rs.${(revenue/1000).toFixed(0)}K</div>
+      <div class="stat-label">Est. Monthly Revenue</div>
+      <div class="stat-change up">↑ Based on active</div>
+    </div>
+  `;
+}
+
+// Table
+function renderTable(){
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  let data = getCustomers();
+  if(currentFilter!=='all') data=data.filter(c=>c.status===currentFilter);
+  if(search) data=data.filter(c=>
+    (c.name||'').toLowerCase().includes(search)||
+    (c.business||'').toLowerCase().includes(search)||
+    (c.phone||'').toLowerCase().includes(search)||
+    (c.service||'').toLowerCase().includes(search)
+  );
+  document.getElementById('tableCount').textContent = data.length+' records';
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  if(data.length===0){
+    tbody.innerHTML='';empty.style.display='block';return;
+  }
+  empty.style.display='none';
+  tbody.innerHTML = data.slice().reverse().map(c=>`
+    <tr>
+      <td><span style="color:var(--primary);font-weight:600;font-size:0.8rem">${c.id||'—'}</span></td>
+      <td>
+        <div class="customer-name">${c.name||'—'}</div>
+        <div class="customer-biz">${c.business||''}</div>
+      </td>
+      <td>${c.service||'—'}</td>
+      <td><span style="font-size:0.8rem">${c.plan||'—'}</span></td>
+      <td>${c.phone||'—'}</td>
+      <td>${c.date||'—'}</td>
+      <td><span class="badge badge-${(c.status||'new').toLowerCase()}">${c.status||'New'}</span></td>
+      <td>
+        <div class="actions">
+          <button class="action-btn" onclick="openDetail('${c.id}')">👁 View</button>
+          <button class="action-btn danger" onclick="deleteCustomer('${c.id}')">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Filter
+function filterStatus(status, btn){
+  currentFilter=status;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderTable();
+}
+
+// Open detail
+function openDetail(id){
+  currentCustomerId=id;
+  const c=getCustomers().find(x=>x.id===id);
+  if(!c)return;
+  document.getElementById('statusSelect').value=c.status||'New';
+  document.getElementById('adminNotes').value=c.notes||'';
+  document.getElementById('detailGrid').innerHTML=`
+    <div class="detail-item"><div class="detail-label">Name</div><div class="detail-val">${c.name||'—'}</div></div>
+    <div class="detail-item"><div class="detail-label">Business</div><div class="detail-val">${c.business||'—'}</div></div>
+    <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-val">${c.phone||'—'}</div></div>
+    <div class="detail-item"><div class="detail-label">Email</div><div class="detail-val">${c.email||'—'}</div></div>
+    <div class="detail-item"><div class="detail-label">Service</div><div class="detail-val">${c.service||'—'}</div></div>
+    <div class="detail-item"><div class="detail-label">Plan</div><div class="detail-val">${c.plan||'—'}</div></div>
+    <div class="detail-item"><div class="detail-label">Website/Page</div><div class="detail-val">${c.website||'—'}</div></div>
+    <div class="detail-item"><div class="detail-label">Order Date</div><div class="detail-val">${c.date||'—'}</div></div>
+    <div class="detail-item" style="grid-column:1/-1"><div class="detail-label">Message</div><div class="detail-val">${c.message||'No message'}</div></div>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function closeModal(){ document.getElementById('detailModal').classList.remove('open'); }
+
+function saveStatus(){
+  const list=getCustomers();
+  const idx=list.findIndex(x=>x.id===currentCustomerId);
+  if(idx>-1){list[idx].status=document.getElementById('statusSelect').value;saveCustomers(list);}
+  renderStats();renderTable();closeModal();
+}
+
+function saveNotes(){
+  const list=getCustomers();
+  const idx=list.findIndex(x=>x.id===currentCustomerId);
+  if(idx>-1){list[idx].notes=document.getElementById('adminNotes').value;saveCustomers(list);}
+  alert('Notes saved!');
+}
+
+function deleteCustomer(id){
+  if(!confirm('Delete this customer?'))return;
+  const list=getCustomers().filter(x=>x.id!==id);
+  saveCustomers(list);renderStats();renderTable();
+}
+
+// Add sample data
+function addSample(){
+  const samples=[
+    {id:'ORD-'+Date.now()+1,timestamp:new Date().toISOString(),name:'Ahmed Raza',phone:'0311-2345678',email:'ahmed@example.com',business:'Ahmed Shoes Store',service:'Meta Ads Management',plan:'Growth - Rs. 25,000/month',website:'facebook.com/ahmedshoes',message:'Hamari eid sale ka promotion karna hai.',status:'New',date:'15 May 2025'},
+    {id:'ORD-'+Date.now()+2,timestamp:new Date().toISOString(),name:'Sara Khan',phone:'0321-9876543',email:'sara@example.com',business:'Sara Beauty Salon',service:'Social Media Management',plan:'Starter - Rs. 10,000/month',website:'instagram.com/sarabeauty',message:'',status:'Active',date:'18 May 2025'},
+    {id:'ORD-'+Date.now()+3,timestamp:new Date().toISOString(),name:'Bilal Akhtar',phone:'0301-5555555',email:'',business:'Bilal Electronics',service:'AI Ad Creatives',plan:'Pro - Rs. 50,000/month',website:'bilalelectronics.pk',message:'Need aggressive marketing for new products.',status:'Contacted',date:'20 May 2025'},
+  ];
+  const existing=getCustomers();
+  saveCustomers([...existing,...samples]);
+  renderStats();renderTable();
+  alert('3 sample customers added!');
+}
+
+// Export CSV
+function exportCSV(){
+  const data=getCustomers();
+  if(!data.length){alert('No data to export!');return;}
+  const headers=['ID','Name','Business','Phone','Email','Service','Plan','Website','Date','Status','Notes','Message'];
+  const rows=data.map(c=>[c.id,c.name,c.business,c.phone,c.email,c.service,c.plan,c.website,c.date,c.status,c.notes||'',c.message||''].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='nexads_customers.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+function logout(){
+  sessionStorage.removeItem('nexads_admin');
+  window.location.href='login.html';
+}
+
+// Init
+renderStats();
+renderTable();
+</script>
+</body>
+</html>
